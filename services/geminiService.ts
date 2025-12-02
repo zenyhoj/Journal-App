@@ -1,9 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AIAnalysisResult } from "../types";
 
-// Initialize the API client
-// Note: In a real production app, ensure this is handled via backend proxy or strictly env vars.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Note: Initialization is handled lazily to prevent runtime errors during app load if env vars are missing.
 
 export const GeminiService = {
   analyzeEntry: async (text: string): Promise<AIAnalysisResult> => {
@@ -12,6 +10,9 @@ export const GeminiService = {
     }
 
     try {
+      // Initialize the API client lazily
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: `Analyze the following journal entry. Provide a brief summary (max 20 words), a sentiment analysis (positive, neutral, or negative), and up to 3 relevant tags.
